@@ -2,15 +2,15 @@ import io
 import time
 from typing import Generator, Union
 
-from picamera import Picamera
+from picamera2 import Picamera2 as Picamera
 
 
 from image_providers.image_provider import ImageProvider
 
 
-class PicameraImageProvider(ImageProvider):
+class Picamera2ImageProvider(ImageProvider):
 
-    _picamera = None
+    _picamera: Picamera = None
 
     def __init__(self, width: int = 1200, height: int = 900, framerate: int = 30, *args, **kwargs) -> None:
         self.width = width,
@@ -20,14 +20,14 @@ class PicameraImageProvider(ImageProvider):
         ImageProvider.__init__(self, *args, **kwargs)
 
     def __enter__(self):
-        if PicameraImageProvider._picamera is None:
-            PicameraImageProvider._picamera = Picamera()
+        if Picamera2ImageProvider._picamera is None:
+            Picamera2ImageProvider._picamera = Picamera()
 
-        PicameraImageProvider._picamera.resolution = self.width, self.height
-        PicameraImageProvider._picamera.framerate = self.framerate
+        Picamera2ImageProvider._picamera.resolution = self.width, self.height
+        Picamera2ImageProvider._picamera.framerate = self.framerate
 
-        if not PicameraImageProvider._picamera.started:
-            PicameraImageProvider._picamera.start()
+        if not Picamera2ImageProvider._picamera.started:
+            Picamera2ImageProvider._picamera.start()
             time.sleep(2)
 
         return super().__enter__()
@@ -36,7 +36,7 @@ class PicameraImageProvider(ImageProvider):
         try:
             stream = io.BytesIO()
             while True:
-                PicameraImageProvider._picamera.capture_file(
+                Picamera2ImageProvider._picamera.capture_file(
                     stream, format='jpeg')
                 stream.seek(0)
 
@@ -46,4 +46,4 @@ class PicameraImageProvider(ImageProvider):
                 stream.seek(0)
                 stream.truncate()
         finally:
-            PicameraImageProvider._picamera.stop()
+            Picamera2ImageProvider._picamera.stop()

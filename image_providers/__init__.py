@@ -14,6 +14,12 @@ except Exception as e:
     logging.warn(e)
 
 try:
+    import image_providers.pi2
+    availables['pi2'] = image_providers.pi2.Picamera2ImageProvider
+except Exception as e:
+    logging.warn(e)
+
+try:
     import image_providers.opencv
     availables['opencv'] = image_providers.opencv.OpenCVImageProvider
 except Exception as e:
