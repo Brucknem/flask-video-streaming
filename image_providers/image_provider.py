@@ -8,7 +8,7 @@ from image_providers.image_provider_event import ImageProviderEvent
 
 
 class ImageProvider:
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self) -> None:
         self._thread = None  # background thread that reads frames from camera
         self._frame = None  # current frame is stored here by background thread
         self._stop_thread = False
@@ -23,16 +23,12 @@ class ImageProvider:
 
         return self._frame
 
-    def __enter__(self):
+    def start(self, *args, **kwargs):
         self._last_access = time.time()
-        self._thread = threading.Thread(
-            target=lambda: self.background_thread())
-        self._thread.start()
-        self._event.wait()
-        return self
-
-    def __exit__(self, *args):
-        pass
+        if not self._thread:
+            self._thread = threading.Thread(target=self.background_thread)
+            self._thread.start()
+            self._event.wait()
 
     def background_thread(self):
         frames_iterator = self.frames()
@@ -45,6 +41,7 @@ class ImageProvider:
                 frames_iterator.close()
                 logging.info('Stopping camera thread due to inactivity.')
                 break
+        self._thread = None
 
     def frames(self) -> Generator[io.BytesIO, None, None]:
         raise NotImplementedError('Subclass must implement this method')

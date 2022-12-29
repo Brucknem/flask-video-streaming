@@ -8,9 +8,10 @@ from image_providers.image_provider import ImageProvider
 
 
 class OpenCVImageProvider(ImageProvider):
-    def __init__(self, source: str = None, *args, **kwargs) -> None:
+
+    def start(self, source: str = None, *args, **kwargs):
         self.source = pathlib.Path('videos').joinpath(str(source))
-        ImageProvider.__init__(self, *args, **kwargs)
+        return super().start()
 
     def frames(self) -> Generator[io.BytesIO, None, None]:
         capture = cv2.VideoCapture(str(self.source))

@@ -10,9 +10,9 @@ import v4l2capture
 
 class V4L2ImageProvider(ImageProvider):
 
-    def __init__(self, source: str = None, *args, **kwargs) -> None:
+    def start(self, source: str = None, *args, **kwargs):
         self.source = source
-        ImageProvider.__init__(self, *args, **kwargs)
+        return super().start()
 
     def frames(self) -> Generator[io.BytesIO, None, None]:
         video = v4l2capture.Video_device(self.source)

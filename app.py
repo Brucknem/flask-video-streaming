@@ -25,10 +25,12 @@ def gen(provider: str, **kwargs) -> Generator[io.BytesIO, None, None]:
     """Video streaming generator function."""
     yield b'--frame\r\n'
 
-    with image_providers.select(provider)(**kwargs) as image_provider:
-        while True:
-            frame = image_provider.get_frame()
-            yield b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n--frame\r\n'
+    image_provider = image_providers.select(provider)()
+    image_provider.start(**kwargs)
+
+    while True:
+        frame = image_provider.get_frame()
+        yield b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n--frame\r\n'
 
 
 @app.route('/video_feed/')

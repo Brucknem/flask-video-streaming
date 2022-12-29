@@ -12,25 +12,23 @@ class PicameraImageProvider(ImageProvider):
 
     _picamera = None
 
-    def __init__(self, width: int = 1200, height: int = 900, framerate: int = 30, *args, **kwargs) -> None:
-        self.width = width,
-        self.height = height
-        self.framerate = framerate
+    def start(self, resolution: str = 'wide', flipped: bool = True, * args, **kwargs):
+        size = (1296, 972)
+        if resolution == 'high':
+            size = (1920, 1080)
 
-        ImageProvider.__init__(self, *args, **kwargs)
-
-    def __enter__(self):
         if PicameraImageProvider._picamera is None:
             PicameraImageProvider._picamera = Picamera()
 
-        PicameraImageProvider._picamera.resolution = self.width, self.height
-        PicameraImageProvider._picamera.framerate = self.framerate
+        PicameraImageProvider._picamera.stop()
+        video_config = PicameraImageProvider._picamera.create_video_configuration(
+            main={"size": size},
+            lores={"size": (320, 240)},
+            encode="lores"
+        )
+        PicameraImageProvider._picamera.start(video_config)
 
-        if not PicameraImageProvider._picamera.started:
-            PicameraImageProvider._picamera.start()
-            time.sleep(2)
-
-        return super().__enter__()
+        return super().start()
 
     def frames(self) -> Generator[io.BytesIO, None, None]:
         try:
