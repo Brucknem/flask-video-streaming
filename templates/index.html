@@ -1,0 +1,22 @@
+<html>
+
+<head>
+  <title>Video Streaming Demonstration</title>
+</head>
+
+<body>
+  <h1>Video Streaming Demonstration</h1>
+  <ul>
+    {%for provider in providers %}
+    <li><a href="{{ url_for('index', provider=provider) }}">Provider: {{provider}}</a></li>
+    {%endfor%}
+  </ul>
+  <ul>
+    {%for source in sources %}
+    <li><a href="{{ url_for('index', source=source, provider='opencv') }}">Video: {{source}}</a></li>
+    {%endfor%}
+  </ul>
+  <img src="{{ url_for('video_feed', provider=provider, source=source) }}">
+</body>
+
+</html>
